@@ -14,8 +14,15 @@ Create a new Collection called 'books':
 
 Create a session variable as a short-hand:
 
-
 `var books = db.books`
+
+List Collections in current db
+
+`show collections`
+
+## CRUD Syntax
+
+[CRUD Operations Docs](https://docs.mongodb.com/manual/crud/)
 
 ## Create (Insert)
 ```
@@ -30,23 +37,36 @@ See what's in the Collection.
 
 `books.find()`
 
-`books.findOne()` ???
+`books.findOne()` Returns the first Document that matches.
 
+Query criteria needs quotes if the field name has dots in it.
 
-books.insert({
+> books.find({title: "Snow Crash"})
+
+> books.find({"ratings.1.score": 999})
+
+**Examples to Insert**
+
+> books.insert({
   title: "A Tale of Two Cities",
   author: "Charles Dickens",
   edition: 2,
   published: new Date('05-20-1859')
 });
 
-books.insert({
+> books.insert({
   title: "Murder on the Orient Express",
   author: "Agatha Christie",
   edition: 2
 });
 
-books.insert({
+> books.insert({
+  title: "Snow Crash",
+  author: "Neal Steve",
+  edition: 1.2
+});
+
+> books.insert({
   title: "Catcher in the Rye",
   author: "Someone",
   edition: 1,
@@ -75,6 +95,8 @@ Find based on given edition numbers range
 
 Implicit AND is used when multiple fields are specified.
 
+Explicit $and
+
 $lte, $gte (greater than or equals)
 
 `$exists` checks if this Document has a property/field.
@@ -87,7 +109,7 @@ books.update()
 books.update({title:"Catcher in the Rye"}, {$set: author: "J. D. Salinger"});
 ```
 
-### Arrays
+### [Arrays](https://docs.mongodb.com/v3.2/reference/operator/update-array/)
 
 Push into an existing array on a Document:
 
@@ -102,7 +124,7 @@ Find It:
 `books.find({title: "Catcher in the Rye"})`
 
 Update It:
-books.update({title: "Catcher in the Rye"}, {$set: {ratings.1.score: 999}})
+books.update({title: "Catcher in the Rye"}, {$set: {"ratings.1.score": 999}})
 
 
 db.orders.update({_id: <some object id>}, {$set: {lineItems.1.unitPrice: 42.99}})
