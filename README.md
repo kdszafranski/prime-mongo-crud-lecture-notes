@@ -63,7 +63,11 @@ Query criteria needs quotes if the field name has dots in it.
 > books.insert({
   title: "Snow Crash",
   author: "Neal Steve",
-  edition: 1.2
+  edition: 1.2,
+  ratings: [
+    {score: 5},
+    {score: 1}
+  ]
 });
 
 > books.insert({
@@ -80,96 +84,69 @@ Query criteria needs quotes if the field name has dots in it.
 
 
 ## Read (Find)
-All books in our Collection: `books.find()`
+All books in our Collection:
 
-Specific: `books.find({title: "Snow Crash"});`
+> books.find(); or books.find({})
 
-Like Search: `books.find({title: /Cat/});`
+Make it pretty by chaining .pretty() onto your query.
 
+> books.find().pretty()
 
-### Comparison Operators (greater-, less-than)
-By Date. Before today: `books.find({published: {$lt: new Date('2016-11-28')}})`
+Specific:
 
-Find based on given edition numbers range
-`books.find({'edition':{$lt: 3}, 'edition':{$gt: 1.2} })`
+> books.find({title: "Snow Crash"});
 
-Implicit AND is used when multiple fields are specified.
+Like Search:
 
-Explicit $and
-
-$lte, $gte (greater than or equals)
+> books.find({title: /Cat/});
 
 `$exists` checks if this Document has a property/field.
+
+> books.find( {ratings: {$exists: true} } )
+
+
+### [Query Operators](https://docs.mongodb.com/manual/reference/operator/query/)
+
+By Date. Before today:
+> books.find({published: {$lt: new Date('2016-11-28')}})
+
+Find based on given edition numbers range
+
+> books.find({'edition':{$lt: 3}, 'edition':{$gt: 1.2} })
+
+#### Partial List
+
+* `$lt`, `$gt` (less-than, greater-than)
+* `$lte`, `$gte` (less-,greater-than or equals)
+* `$ne` (not equal)
+* Implicit AND is used when multiple fields are specified.
+* Explicit `$and` possible
 
 
 ## Update
 books.update()
 
-```
-books.update({title:"Catcher in the Rye"}, {$set: author: "J. D. Salinger"});
-```
+> books.update({title:"Catcher in the Rye"}, {$set: author: "J. D. Salinger"});
 
 ### [Arrays](https://docs.mongodb.com/v3.2/reference/operator/update-array/)
 
 Push into an existing array on a Document:
 
-```
-books.update({title: "Catcher in the Rye"}, {$push: {ratings: {score: 4.5}}})
-books.update({title: "Catcher in the Rye"}, {$push: {ratings: {score: 9}}})
-```
+> books.update({title: "Catcher in the Rye"}, {$push: {ratings: {score: 4.5}}})
 
-Update in an array (? no idea)
+> books.update({title: "Catcher in the Rye"}, {$push: {ratings: {score: 9}}})
+
+**Update a value in an array**
 
 Find It:
-`books.find({title: "Catcher in the Rye"})`
+
+> books.find({title: "Catcher in the Rye"})
 
 Update It:
-books.update({title: "Catcher in the Rye"}, {$set: {"ratings.1.score": 999}})
 
-
-db.orders.update({_id: <some object id>}, {$set: {lineItems.1.unitPrice: 42.99}})
+> books.update({title: "Catcher in the Rye"}, {$set: {"ratings.1.score": 999}})
 
 
 ## Delete (Remove)
 books.remove({"_id" : ObjectId("583dc0b4482c7736c1d27058")})
 583dc0b4482c7736c1d27058
-
-// doesn't work
-
-books.remove({title: "A Tale of Two Cities", published: null})
-
-
-### Assignment Answers
-```
-db.orders.insert([
-  {orderDate: new Date('2000-01-02-),
-  orderTotal: 12.99,
-  lineItems: [
-  {unitPrice: 2.00, quantity: 5, productName: 'giraffe'}
-  ]},
- {// second object},
- {// third object}
-})
-
-//3. Find a single order document, any order document.
-db.orders.findOne()
-
-//4. Find all orders and make them look pretty.
-db.orders.find().pretty()
-
-//5. Find all orders with an orderDate that is prior to 1/1/2016.
-db.orders.find({orderDate: {$lt: new Date('2016-01-01')})
-
-//6. Find all orders with an orderDate that is after 1/1/2016.
-db.orders.find({orderDate: {$gt: new Date('2016-01-01')})
-
-//7. Find orders with lineItems that have a quantity that is less than 50, but greater than 5.
-db.orders.find({$and:['lineItems.quantity':{$lt: 50}, 'lineItems.quantity':{$gt: 5}]}})
-
-//8. Update one of your line items to 42.99.
-// Note that the 1 here is the index in the array. Arrays are zero based.
-db.orders.update({_id: <some object id>}, {$set: {lineItems.1.unitPrice: 42.99}})
-
-//9. Remove one of your orders.
-db.orders.remove({_id: <some object id>})
-```
