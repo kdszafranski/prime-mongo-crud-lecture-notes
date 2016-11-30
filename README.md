@@ -51,7 +51,7 @@ Query criteria needs quotes if the field name has dots in it.
   title: "A Tale of Two Cities",
   author: "Charles Dickens",
   edition: 2,
-  published: new Date('05-20-1859')
+  published: new ISODate('1859-5-20')
 });
 
 > books.insert({
